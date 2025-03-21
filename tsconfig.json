@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",          // To support ES modules
+    "target": "ES6",             // Modern JS
+    "moduleResolution": "node",  // Resolve modules like Node.js
+    "outDir": "./dist",          // Output directory for compiled files
+    "rootDir": "./src",          // Root directory for your TypeScript files
+    "esModuleInterop": true,
+    "resolveJsonModule": true,     // Allow default imports from non-ES modules
+    "strict": true,              // Enable strict type checking
+    "skipLibCheck": true,      // Skip type checking of declaration files
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src", // Set base directory for module resolution
+    "paths": {
+      "__mocks__/*": ["__mocks__/*"]
+    },
+    "lib": ["dom", "es2017"]
+  },
+  "include": [
+    "src/**/*.ts"                // Only include .ts files from src/
+  ]
+}

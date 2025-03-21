@@ -1,0 +1,158 @@
+/* CSS Variables */
+:root {
+    --font-family: Arial, sans-serif;
+    --font-size-base: 1rem;
+    --font-weight-normal: normal;
+    --color-border: #ddd;
+    --color-bg-header: #f8f9fa;
+    --color-bg-hover: #f1f1f1;
+    --color-bg-selected: #e0f7fa;
+    --color-text: inherit;
+    --padding-base: 4px;
+    --padding-large: 10px;
+    --padding-side: 16px;
+    --gap-base: 5px;
+    --gap-large: 8px;
+}
+
+/* General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+}
+
+/* File Explorer Layout */
+.file-explorer {
+    display: flex;
+    height: 500px;
+    overflow: hidden;
+}
+
+/* Left Pane (Folder Tree) */
+#left-pane {
+    padding-right: var(--padding-side);
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
+    min-width: 250px;
+}
+
+/* Folder List */
+ul {
+    padding-left: var(--padding-side);
+}
+
+li {
+    list-style: none;
+}
+
+ul.collapsed {
+    display: none;
+}
+
+/* Folder Button */
+.folder-button, 
+.file-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-base);
+    text-align: left;
+    padding: var(--padding-base);
+}
+
+/* Selected */
+.selected {
+    background-color: var(--color-bg-selected);
+}
+
+/* Folder Arrow */
+.folder-arrow {
+    display: inline-block;
+    width: 10px;
+    margin-right: 4px;
+}
+
+/* Folder Icon */
+.folder-icon {
+    margin-right: var(--gap-base);
+}
+
+/* Right Pane (File Table) */
+#right-pane {
+    flex: 1;
+    min-width: 600px;
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
+}
+/* File Table */
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+thead {
+    display: table-header-group;
+    width: 100%;
+    background: var(--color-bg-header);
+}
+
+th, td {
+    padding: var(--padding-large);
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* File Row */
+.table-row-item {
+    cursor: pointer;
+}
+
+.table-row-item:hover {
+    background: var(--color-bg-hover);
+}
+
+/* File Name Column */
+.col__file-name {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-large);
+    overflow-x: scroll;
+}
+
+@media (max-width: 768px) {
+    .file-explorer {
+        flex-direction: column;
+    }
+
+    #left-pane {
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    #right-pane {
+        min-width: 100%;
+    }
+
+    table {
+        min-width: 100%;
+    }
+}
