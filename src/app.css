@@ -1,23 +1,33 @@
-.file-explorer{
+/* File Explorer Container */
+.file-explorer {
     display: flex;
     height: 500px;
 }
 
+/* Left Pane Container */
 #left-pane {
     padding-right: 24px;
     border: 1px solid #ddd;
     overflow-x: scroll;
-    
 }
+
+/* Right Pane Container*/
 #right-pane {
     border: 1px solid #ddd;
     min-width: 900px;
 }
 
+/* File Name Column */
 .col__file-name {
-   min-width: 480px;
+    min-width: 480px;
 }
 
+/* Collapsed List */
+ul.collapsed {
+    display: none;
+}
+
+/* Folder Button */
 .folder-button {
     display: flex;
     align-items: center;
@@ -26,8 +36,9 @@
     border: none;
     cursor: pointer;
     font-size: 14px;
-  }
-  
+}
+
+
 .folder-arrow {
     display: inline-block;
     width: 10px;
@@ -43,24 +54,30 @@ table {
     border-collapse: collapse;
 }
 
+/* Table Header & Cells */
 th, td {
     padding: 8px;
     text-align: left;
 }
 
+/* List Item */
 li {
     list-style-type: none;
 }
 
+/* Table Header */
 thead {
     border: 1px solid #ddd;
 }
 
+/* Selected Folder */
 .selected-folder {
     background-color: #e0f7fa; /* Light blue background to indicate selection */
     border-radius: 4px;
-    font-weight: bold; /* Optional: Make the folder name bold */
+    font-weight: bold; 
 }
+
+/* Selected Item */
 .selected {
-    background-color: rgba(0, 123, 255, 0.2); /* Light blue highlight */
+    background-color: #e0f7fa; /* Light blue background to indicate selection */
 }

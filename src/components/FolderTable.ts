@@ -1,81 +1,73 @@
-import { ITreeNode } from "../types";
-import { findFolderByName, formatDate, highlightFileItem } from "../utils.js";
-import { expandLeftPaneFolder } from "./FolderTree.js";
+import { ITreeNode } from '../types';
+import { findFolderByName, formatDate, highlightFileItem } from '../utils.js';
+import { expandLeftPaneFolder } from './FolderTree.js';
 
-export function showFolderContents(folder: ITreeNode, data: ITreeNode[]): void {
-  const fileTable = document.getElementById("file-table") as HTMLTableElement;
-  const tbody = fileTable.querySelector("tbody") as HTMLTableSectionElement;
-  tbody.innerHTML = ""; // Clear the existing files
+function createTableRow(node: ITreeNode) {
+  const tr = document.createElement('tr');
+  tr.classList.add('file-item');
+
+  const nameTd = document.createElement('td');
+  nameTd.classList.add('col__file-name');
+
+  const modifiedTd = document.createElement('td');
+  modifiedTd.textContent = formatDate(node.modified);
+
+  const sizeTd = document.createElement('td');
+  if (node.type === 'file') {
+    sizeTd.textContent = `${node.size} KB`;
+  }
+
+  const iconSpan = document.createElement('span');
+  iconSpan.textContent = node.type === 'file' ? '📄' : '📂';
+  iconSpan.classList.add('folder-icon')
+
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = node.name;
+  nameSpan.classList.add('file-name');
+
+  nameTd.appendChild(iconSpan);
+  nameTd.appendChild(nameSpan);
+
+  tr.appendChild(nameTd);
+  tr.appendChild(modifiedTd);
+  tr.appendChild(sizeTd);
+
+  return tr
+}
+
+export function showFolderContents({folder, data}: {folder: ITreeNode, data: ITreeNode[]}): void {
+  const fileTable = document.getElementById('file-table') as HTMLTableElement;
+  if (!fileTable){
+    console.warn('File Table is not found')
+  }
+  const tbody = fileTable.querySelector('tbody') as HTMLTableSectionElement;
+  if (!tbody) {
+    console.warn('Table Body is not found')
+  }
+  tbody.innerHTML = ''; // Clear the existing files
 
   folder.children?.forEach((child, index) => {
-    const tr = document.createElement("tr");
-    tr.classList.add("file-item");
-
-    const nameTd = document.createElement("td");
-    nameTd.classList.add("col__file-name");
-
-    const modifiedTd = document.createElement("td");
-    const sizeTd = document.createElement("td");
-
-    // Create the icon
-    const iconSpan = document.createElement("span");
-    iconSpan.textContent = child.type === "file" ? "📄" : "📂";
-    iconSpan.classList.add('folder-icon')
-
-    // Create the name span
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = child.name;
-    nameSpan.classList.add("file-name");
-
-    // Append icon and name to the name cell
-    nameTd.appendChild(iconSpan);
-    nameTd.appendChild(nameSpan);
-
-    modifiedTd.textContent = formatDate(child.modified);
-
-    if (child.type === "file") {
-      sizeTd.textContent = `${child.size} KB`;
-    }
-
-    tr.appendChild(nameTd);
-    tr.appendChild(modifiedTd);
-    tr.appendChild(sizeTd);
-
-    // Attach click event for highlighting and expanding folders
-    tr.addEventListener("click", () => {
-      highlightFileItem(tr);
-
-      if (child.type === "folder") {
-        const foundFolder = findFolderByName(child.name, data);
-        if (foundFolder) {
-          expandLeftPaneFolder(foundFolder);
-          showFolderContents(foundFolder, data);
-        }
-      }
-    });
+    const tr = createTableRow(child)
 
     tbody.appendChild(tr);
-
-    // Highlight the first item by default
-    if (index === 0) {
-      highlightFileItem(tr);
-    }
   });
 }
 
 export function handleFolderTableItemClick(event: Event, data: ITreeNode[]) {
   const target = event.target as HTMLElement;
-  const td = target.closest("td");
+  const tr = target.closest('tr');
 
-  if (td) {
-    const nameSpan = td.querySelector(".file-name");
-    const tableItemName = nameSpan?.textContent?.trim() || "";
+  if (tr) {
+    // Highlight that clicked item
+    highlightFileItem(tr);
+    const nameSpan = tr.querySelector('.file-name');
+    const tableItemName = nameSpan?.textContent?.trim() || '';
 
     if (tableItemName) {
       const tableItem = findFolderByName(tableItemName, data);
-      if (tableItem && tableItem.type === "folder") {
+      if (tableItem && tableItem.type === 'folder') {
         expandLeftPaneFolder(tableItem);
-        showFolderContents(tableItem, data);
+        showFolderContents({folder: tableItem, data});
       }
     }
   }

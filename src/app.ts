@@ -8,6 +8,12 @@ import {handleFolderTableItemClick} from './components/FolderTable.js'
     const leftPane = generateLeftPaneFolderTree(data)
     const rightPane = document.getElementById('right-pane') as HTMLElement
 
+    if (!leftPane) {
+        console.warn('Left Pane not found')
+    }
+    if (!rightPane) {
+        console.warn('Right Pane not found')
+    }
     // Event delegation to handle folder clicks
     leftPane.addEventListener('click', (e) => handleFolderTreeItemClick(e, data));
     rightPane.addEventListener('click', (e) => handleFolderTableItemClick(e, data));
