@@ -19,8 +19,8 @@ export function showFolderContents(folder: ITreeNode, data: ITreeNode[]): void {
 
     // Create the icon
     const iconSpan = document.createElement("span");
-    iconSpan.textContent = child.type === "file" ? "📄 " : "📂 ";
-    iconSpan.classList.add("file-icon");
+    iconSpan.textContent = child.type === "file" ? "📄" : "📂";
+    iconSpan.classList.add('folder-icon')
 
     // Create the name span
     const nameSpan = document.createElement("span");

@@ -1,6 +1,6 @@
 import { ITreeNode } from "../types";
 import { findFolderButtonByName, findFolderByName, highlightFolder } from "../utils.js";
-import { showFolderContents } from './FolderTable.js';
+import { showFolderContents } from "./FolderTable.js";
 
 // Function to generate the left pane folder tree
 export function generateLeftPaneFolderTree(data: ITreeNode[]) {
@@ -22,35 +22,50 @@ export function createFolderExplorer({ data, parentElement }: { data: ITreeNode[
       button.classList.add('folder-button');
       button.dataset.type = node.type;
 
+      // Create the arrow (always add it for alignment)
+      const arrowSpan = document.createElement("span");
+      arrowSpan.textContent = node.children && node.children.length ? "▶" : " ";
+      arrowSpan.classList.add("folder-arrow");
+      button.appendChild(arrowSpan);
+      
       // Create the folder icon
       const iconSpan = document.createElement('span');
       iconSpan.textContent = '📂'; // Folder icon
-      iconSpan.classList.add('folder-icon'); // Add a class for styling
+      iconSpan.classList.add('folder-icon');
 
       // Create the folder name text
       const nameSpan = document.createElement('span');
       nameSpan.textContent = node.name;
 
-      // Append the icon and name to the button
+      // Append everything to the button
       button.appendChild(iconSpan);
       button.appendChild(nameSpan);
-
       li.appendChild(button);
 
       // If the folder has children, create a nested list
+      let nestedUl: HTMLUListElement | null = null;
       if (node.children && node.children.length) {
-        const nestedUl = document.createElement('ul');
+        nestedUl = document.createElement('ul');
         nestedUl.style.display = 'none'; // Hide initially
         createFolderExplorer({ data: node.children, parentElement: nestedUl });
         li.appendChild(nestedUl);
       }
+
+      // Handle click to expand/collapse
+      button.addEventListener('click', () => {
+        if (nestedUl) {
+          const isCollapsed = nestedUl.style.display === "none";
+          nestedUl.style.display = isCollapsed ? "block" : "none";
+          arrowSpan.textContent = isCollapsed ? "▼" : "▶"; // Down or right arrow
+        }
+      });
 
       parentElement.appendChild(li);
     }
   });
 }
 
-// Function to expand a folder in the left pane (not collapsing for now)
+// Function to expand a folder in the left pane
 export function expandLeftPaneFolder(folder: ITreeNode) {
   const leftPane = document.getElementById('left-pane') as HTMLElement;
 
@@ -63,10 +78,13 @@ export function expandLeftPaneFolder(folder: ITreeNode) {
 
     // Find the nested <ul> inside the parent <li>
     const nestedUl = parentLi?.querySelector('ul');
+    const arrowSpan = folderButton.querySelector('.folder-arrow');
 
-    // Toggle the nested <ul> visibility
     if (nestedUl) {
       nestedUl.style.display = 'block'; // Ensure the folder's nested items are shown
+      if (arrowSpan) {
+        arrowSpan.textContent = "▼"; // Ensure the arrow points down
+      }
     }
     highlightFolder(folderButton);
   }
@@ -80,25 +98,14 @@ export function handleFolderTreeItemClick(event: Event, data: ITreeNode[]) {
   const button = target.closest('button');
   
   if (button && button.dataset.type === 'folder') {
-    // Find the span that contains the folder name
     const nameSpan = button.querySelector('span:last-child');  // The last span is the folder name
     const folderName = nameSpan?.textContent?.trim() || '';
 
     if (folderName) {
-      // Find the corresponding folder object from the data
       const folder = findFolderByName(folderName, data);
       if (folder) {
-        // Show folder contents in the right pane
-        showFolderContents(folder);
-        highlightFolder(button);
-
-        // Expand the folder by displaying its nested <ul> if it exists
-        const parentLi = button.closest('li');
-        const nestedUl = parentLi?.querySelector('ul');
-
-        if (nestedUl) {
-          nestedUl.style.display = nestedUl.style.display === 'none' ? 'block' : 'none';  // Toggle visibility // Show the nested <ul> for this folder
-        }
+        showFolderContents(folder, data);
+        expandLeftPaneFolder(folder); // Expands the folder when clicked from the right
       }
     }
   }

@@ -20,6 +20,22 @@
 
 .folder-button {
     display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+.folder-arrow {
+    display: inline-block;
+    width: 10px;
+    margin-right: 8px;
+}
+
+.folder-icon {
+    margin-right: 4px;
 }
 
 table {
@@ -30,6 +46,10 @@ table {
 th, td {
     padding: 8px;
     text-align: left;
+}
+
+li {
+    list-style-type: none;
 }
 
 thead {
