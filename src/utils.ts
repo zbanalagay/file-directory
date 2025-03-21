@@ -22,3 +22,15 @@ export function findFolderByName(name: string, data: ITreeNode[]): ITreeNode | u
     }
     return undefined;
 }
+
+export function findParentFolder(folder: ITreeNode, data: ITreeNode[]): ITreeNode | null {
+    for (const node of data) {
+      if (node.children?.includes(folder)) {
+        return node; // Found the parent
+      }
+      // Recursively search in the children
+      const parent = findParentFolder(folder, node.children || []);
+      if (parent) return parent;
+    }
+    return null; // No parent found
+  }
