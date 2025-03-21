@@ -18,6 +18,10 @@
    min-width: 480px;
 }
 
+.folder-button {
+    display: flex;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -32,3 +36,11 @@ thead {
     border: 1px solid #ddd;
 }
 
+.selected-folder {
+    background-color: #e0f7fa; /* Light blue background to indicate selection */
+    border-radius: 4px;
+    font-weight: bold; /* Optional: Make the folder name bold */
+}
+.selected {
+    background-color: rgba(0, 123, 255, 0.2); /* Light blue highlight */
+}
