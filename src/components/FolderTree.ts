@@ -1,9 +1,9 @@
 import { ITreeNode } from "../types";
-import { findFolderButtonByName } from "../utils.js";
+import { findFolderButtonByName, findFolderByName, } from "../utils.js";
+import {showFolderContents} from './FolderTable.js'
 
 export function generateLeftPaneFolderTree(data: ITreeNode[]) {
-    const leftPane = document.createElement('div');
-    leftPane.classList.add('left-pane');
+    const leftPane = document.getElementById('left-pane') as HTMLElement;
     const ul = document.createElement('ul');
     leftPane.appendChild(ul);
     createFolderExplorer({data, parentElement: ul});
@@ -12,7 +12,7 @@ export function generateLeftPaneFolderTree(data: ITreeNode[]) {
 
 export function createFolderExplorer({ data, parentElement }: { data: ITreeNode[], parentElement: HTMLElement }): void {
   data.forEach((node) => {
-    if (node.type === 'folder') { // Only process folders
+    if (node.type === 'folder') { // Only show folders
       const li = document.createElement('li');
       const button = document.createElement('button');
       button.textContent = node.name;
@@ -33,11 +33,29 @@ export function createFolderExplorer({ data, parentElement }: { data: ITreeNode[
 }
 
 export function expandLeftPaneFolder(folder: ITreeNode) {
-    const leftPane = document.querySelector('.left-pane') as HTMLElement;
+    const leftPane = document.getElementById('left-pane') as HTMLElement;
     const folderButton = findFolderButtonByName(folder.name, leftPane);
     const nestedUl = folderButton?.closest('li')?.querySelector('ul');
-    console.log(folderButton, nestedUl)
     if (nestedUl) {
       nestedUl.style.display = 'block';
     }
+}
+
+export function handleFolderTreeItemClick(event: Event, data: ITreeNode[]) {
+  const target = event.target as HTMLElement;
+  if (target && target.tagName === 'BUTTON' && target.dataset.type === 'folder') {
+    const parentLi = target.closest('li');
+    const nestedUl = parentLi?.querySelector('ul');
+
+    if (nestedUl) {
+      nestedUl.style.display = nestedUl.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Select the folder and display contents on the right pane
+    const folderName = target.textContent || '';
+    const folder = findFolderByName(folderName, data);
+    if (folder) {
+      showFolderContents(folder);
+    }
+  }
 }

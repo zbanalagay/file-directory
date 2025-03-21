@@ -1,0 +1,34 @@
+.file-explorer{
+    display: flex;
+    height: 500px;
+}
+
+#left-pane {
+    padding-right: 24px;
+    border: 1px solid #ddd;
+    overflow-x: scroll;
+    
+}
+#right-pane {
+    border: 1px solid #ddd;
+    min-width: 900px;
+}
+
+.col__file-name {
+   min-width: 480px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+thead {
+    border: 1px solid #ddd;
+}
+

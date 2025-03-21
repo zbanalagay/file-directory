@@ -12,7 +12,8 @@
     "baseUrl": "./src", // Set base directory for module resolution
     "paths": {
       "__mocks__/*": ["__mocks__/*"]
-    }
+    },
+    "lib": ["dom", "es2017"]
   },
   "include": [
     "src/**/*.ts"                // Only include .ts files from src/

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "postbuild": "cp ./src/index.html ./dist/index.html", 
+    "postbuild": "cp ./src/index.html ./dist/index.html && cp ./src/app.css ./dist/app.css", 
    "start": "npm run build && concurrently \"npx tsc --watch\" \"npx http-server ./dist -c-1 -p 8080\""
   },
   "keywords": [],
