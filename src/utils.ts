@@ -46,26 +46,15 @@ export function formatDate(date: Date): string {
     return `${month}/${day}/${year}`;
 }
 
-export function highlightFolder(folderButton: HTMLElement) {
-    // Remove the 'selected-folder' class from any previously selected button
-    const previouslySelected = document.querySelector('.folder-button.selected-folder');
-    if (previouslySelected) {
-        previouslySelected.classList.remove('selected-folder');
-    }
-
-    // Add the 'selected-folder' class to the clicked folder
-    folderButton.classList.add('selected-folder');
-}
-
-export function highlightFileItem(fileRow: HTMLTableRowElement) {
-    // Remove 'selected' class from any previously selected row
-    const previouslySelected = document.querySelector('.file-item.selected');
+export function highlightItem({item, className}:{item: HTMLTableRowElement | HTMLElement, className: string}) {
+    // Remove 'selected' class from any previously selected item
+    const previouslySelected = document.querySelector(`.${className}.selected`);
     if (previouslySelected) {
         previouslySelected.classList.remove('selected');
     }
 
-    // Add 'selected' class to the clicked row
-    fileRow.classList.add('selected');
+    // Add 'selected' class to the clicked item
+    item.classList.add('selected');
 }
 
 export function doesNodeHaveFolderChildren (node: ITreeNode): boolean{

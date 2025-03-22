@@ -1,5 +1,5 @@
 import { ITreeNode } from '../types';
-import { findFolderButtonByName, findFolderByName, highlightFolder, doesNodeHaveFolderChildren } from '../utils.js';
+import { findFolderButtonByName, findFolderByName, highlightItem, doesNodeHaveFolderChildren } from '../utils.js';
 import { showFolderContents } from './FolderTable.js';
 
 /* Presentational */
@@ -69,7 +69,7 @@ export function expandLeftPaneFolder(folder: ITreeNode) {
       arrowSpan.textContent = '▼';
     }
 
-    highlightFolder(folderButton);
+    highlightItem({item: folderButton, className: 'folder-button'});
   }
 }
 
