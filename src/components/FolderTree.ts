@@ -17,17 +17,19 @@ export function generateLeftPaneFolderTree(data: ITreeNode[]) {
 export function createFolderExplorer({ data, parentElement }: { data: ITreeNode[], parentElement: HTMLElement }): void {
   data.forEach((node) => {
     // Only show folders
-    if (node.type === 'folder') { 
+    if (node.type === 'folder') {
       const li = document.createElement('li');
       const button = createFolderButton(node);
       li.appendChild(button);
 
       // If there are children, create a nested list
       let nestedUl: HTMLUListElement | null = null;
-      if (node.children && node.children.length) {
+      const hasFolderChildren = (node.children ?? []).some(child => child.type === 'folder');
+
+      if (hasFolderChildren) {
         nestedUl = document.createElement('ul');
         nestedUl.classList.add('collapsed'); // Add the collapsed class initially
-        createFolderExplorer({ data: node.children, parentElement: nestedUl });
+        createFolderExplorer({ data: node.children ?? [], parentElement: nestedUl });
         li.appendChild(nestedUl);
       }
 
@@ -42,8 +44,10 @@ function createFolderButton(node: ITreeNode) {
   button.dataset.type = node.type;
 
   const arrowSpan = document.createElement('span');
-    // always add it for alignment
-  arrowSpan.textContent = node.children && node.children.length ? '▶' : ' ';
+  const hasFolderChildren = (node.children ?? []).some(child => child.type === 'folder');
+
+  // Only show arrow if the folder has child folders
+  arrowSpan.textContent = hasFolderChildren ? '▶' : ' ';
   arrowSpan.classList.add('folder-arrow');
   button.appendChild(arrowSpan);
 
@@ -56,14 +60,13 @@ function createFolderButton(node: ITreeNode) {
 
   button.appendChild(iconSpan);
   button.appendChild(nameSpan);
-  // return arrow span as well so that click handler has it
-  return button
+  return button;
 }
 
 export function expandLeftPaneFolder(folder: ITreeNode) {
   const leftPane = document.getElementById('left-pane') as HTMLElement;
   if (!leftPane) {
-    console.warn('Left Pane not found')
+    console.warn('Left Pane not found');
   }
 
   const folderButton = findFolderButtonByName(folder.name, leftPane);
@@ -83,10 +86,47 @@ export function expandLeftPaneFolder(folder: ITreeNode) {
   }
 }
 
+export function collapseAllChildFolders(button: HTMLElement) {
+  const nestedUl = button.closest('li')?.querySelector('ul');
+  if (nestedUl) {
+    // Find all nested folders (descendants) and collapse them
+    const childFolders = nestedUl.querySelectorAll('ul');
+    childFolders.forEach((childUl) => {
+      childUl.classList.add('collapsed');
+      childUl.style.display = 'none';
+      // Update the arrow direction for the child folder
+      const arrowSpan = button.querySelector('.folder-arrow');
+      if (arrowSpan) {
+        arrowSpan.textContent = '▶'; // Reset to the right arrow for collapsed state
+      }
+    });
+  }
+}
+
+export function collapseParentFolderAndChildren(button: HTMLElement) {
+  const parentLi = button.closest('li');
+  if (parentLi) {
+    // Collapse the parent folder first
+    const nestedUl = parentLi.querySelector('ul');
+    const arrowSpan = button.querySelector('.folder-arrow');
+
+    if (nestedUl) {
+      nestedUl.classList.add('collapsed');
+      nestedUl.style.display = 'none';
+      if (arrowSpan) {
+        arrowSpan.textContent = '▶';
+      }
+    }
+
+    // Now collapse all child folders within this parent
+    collapseAllChildFolders(button);
+  }
+}
+
 export function handleFolderTreeItemClick(event: Event, data: ITreeNode[]) {
   const target = event.target as HTMLElement;
-  if (target){
-    // find the nearest ancestor (including the target itself) that matches
+  if (target) {
+    // Find the nearest ancestor (including the target itself) that matches
     const button = target.closest('button');
     
     if (button && button.dataset.type === 'folder') {
@@ -102,16 +142,21 @@ export function handleFolderTreeItemClick(event: Event, data: ITreeNode[]) {
       }
 
       // Handle expand/collapse for folders
-      // find any nested ul inside the li
       const nestedUl = button.closest('li')?.querySelector('ul');
       if (nestedUl) {
-        // Toggle the collapsed class
-        nestedUl.classList.toggle('collapsed');
-        
-        // Update the arrow direction based on visibility
         const arrowSpan = button.querySelector('.folder-arrow');
-        if (arrowSpan) {
-          arrowSpan.textContent = nestedUl.classList.contains('collapsed') ? '▶' : '▼';
+        
+        // If the folder is already expanded, collapse it and all its children
+        if (!nestedUl.classList.contains('collapsed')) {
+          // Collapse the parent folder and all its children
+          collapseParentFolderAndChildren(button);
+        } else {
+          // Otherwise, expand it
+          nestedUl.classList.remove('collapsed');
+          nestedUl.style.display = 'block';
+          if (arrowSpan) {
+            arrowSpan.textContent = '▼'; // Show down arrow for expanded state
+          }
         }
       }
     }
