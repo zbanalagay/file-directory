@@ -65,6 +65,10 @@ li {
     list-style-type: none;
 }
 
+ul {
+    padding-left: 16px;
+}
+
 /* Table Header */
 thead {
     border: 1px solid #ddd;

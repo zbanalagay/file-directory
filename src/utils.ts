@@ -67,3 +67,7 @@ export function highlightFileItem(fileRow: HTMLTableRowElement) {
     // Add 'selected' class to the clicked row
     fileRow.classList.add('selected');
 }
+
+export function doesNodeHaveFolderChildren (node: ITreeNode): boolean{
+    return (node.children ?? []).some(child => child.type === 'folder');
+}
