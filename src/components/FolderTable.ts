@@ -45,24 +45,39 @@ export function showFolderContents({ folder, data }: { folder: ITreeNode; data: 
   const tbody = fileTable.querySelector('tbody') as HTMLTableSectionElement;
   if (!tbody) return console.warn('Table Body is not found');
 
-  tbody.innerHTML = ''; // Clear existing rows
+  // Clear any previous content in the table
+  tbody.innerHTML = '';
 
-  folder.children?.forEach((child) => tbody.appendChild(createTableRow(child)));
+  // Only show the contents of the selected folder (whether collapsed or expanded)
+  folder.children?.forEach((child) => {
+    // Append the current folder's children to the table
+    tbody.appendChild(createTableRow(child));
+  });
 }
+const folderExpansionState = new Map<string, boolean>(); 
+
 
 export function handleFolderTableItemClick(event: Event, data: ITreeNode[]) {
   const target = event.target as HTMLElement;
   const tr = target.closest('tr');
   const button = target.closest('.folder-button') as HTMLElement | null;
-
-  if (tr) highlightItem({item:tr, className:'table-row-item'});
+  if (tr) highlightItem({ item: tr, className: 'table-row-item' });
 
   if (button && button.dataset.name) {
     const tableItemName = button.dataset.name.trim();
     const tableItem = findFolderByName(tableItemName, data);
+
     if (tableItem?.type === 'folder') {
-      expandLeftPaneFolder(tableItem);
-      showFolderContents({ folder: tableItem, data });
+      // Toggle the expanded/collapsed state of the folder
+      const currentState = folderExpansionState.get(tableItemName) ?? false;
+      folderExpansionState.set(tableItemName, !currentState); // Toggle state
+
+      // Show folder contents based on the expanded/collapsed state
+      showFolderContents({
+        folder: tableItem,
+        data,
+      });
+      expandLeftPaneFolder(tableItem)
     }
   }
 }

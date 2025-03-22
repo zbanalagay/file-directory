@@ -65,11 +65,12 @@ export function expandLeftPaneFolder(folder: ITreeNode) {
     const arrowSpan = folderButton.querySelector('.folder-arrow');
     
     if (nestedUl && arrowSpan) {
-      nestedUl.style.display = 'block';
-      arrowSpan.textContent = '▼';
+      nestedUl.style.display = 'block';  // Show child folder content
+      nestedUl.classList.remove('collapsed'); // Remove the collapsed state
+      arrowSpan.textContent = '▼'; // Change arrow to show expanded state
     }
 
-    highlightItem({item: folderButton, className: 'folder-button'});
+    highlightItem({ item: folderButton, className: 'folder-button' });
   }
 }
 
@@ -79,12 +80,24 @@ export function collapseParentFolderAndChildren(button: HTMLElement, data: ITree
     const nestedUl = parentLi.querySelector('ul');
     const arrowSpan = button.querySelector('.folder-arrow');
 
+    // Hide the folder's child content
     if (nestedUl) {
-      nestedUl.classList.add('collapsed');
-      nestedUl.style.display = 'none';
-      if (arrowSpan) arrowSpan.textContent = '▶';
+      nestedUl.classList.add('collapsed');  // Add the collapsed class
+      nestedUl.style.display = 'none'; // Hide child folder content
+      if (arrowSpan) arrowSpan.textContent = '▶'; // Change arrow to collapsed state
     }
 
+    // Now, **keep** the content of the selected folder in the table
+    const selectedFolderButton = document.querySelector('.folder-button.selected') as HTMLElement;
+    const selectedFolderName = selectedFolderButton?.querySelector('span:last-child')?.textContent?.trim();
+    if (selectedFolderName) {
+      const selectedFolder = findFolderByName(selectedFolderName, data);
+      if (selectedFolder) {
+        showFolderContents({ folder: selectedFolder, data });  // Show selected folder content in table
+      }
+    }
+
+    // Collapse all child folders recursively
     collapseAllChildFolders(parentLi, data);
   }
 }
@@ -94,6 +107,20 @@ export function collapseAllChildFolders(parentLi: HTMLElement, data: ITreeNode[]
   childFolders.forEach((childUl) => {
     childUl.classList.add('collapsed');
     childUl.style.display = 'none';
+
+    // Don't clear the table contents, keep showing the selected folder content
+    const fileTable = document.getElementById('file-table') as HTMLTableElement;
+    const tbody = fileTable?.querySelector('tbody') as HTMLTableSectionElement;
+    if (tbody) {
+      const selectedFolderButton = document.querySelector('.folder-button.selected') as HTMLElement;
+      const selectedFolderName = selectedFolderButton?.querySelector('span:last-child')?.textContent?.trim();
+      if (selectedFolderName) {
+        const selectedFolder = findFolderByName(selectedFolderName, data);
+        if (selectedFolder) {
+          showFolderContents({ folder: selectedFolder, data });  // Ensure table content is updated with selected folder
+        }
+      }
+    }
 
     const folderButtons = childUl.querySelectorAll('button.folder-button');
     folderButtons.forEach((button) => {
@@ -120,21 +147,27 @@ export function handleFolderTreeItemClick(event: Event, data: ITreeNode[]) {
       if (folderName) {
         const folder = findFolderByName(folderName, data);
         if (folder) {
+          // Always show the folder's content in the table when selected
           showFolderContents({ folder, data });
-          expandLeftPaneFolder(folder);
+
+          // Highlight the folder button
+          highlightItem({ item: button, className: 'folder-button' });
         }
       }
 
+      // Check if the folder is collapsed or expanded
       const nestedUl = button.closest('li')?.querySelector('ul');
       const arrowSpan = button.querySelector('.folder-arrow');
 
       if (nestedUl) {
-        if (!nestedUl.classList.contains('collapsed')) {
-          collapseParentFolderAndChildren(button, data);
-        } else {
+        if (nestedUl.classList.contains('collapsed')) {
+          // If it's collapsed, expand it
           nestedUl.classList.remove('collapsed');
           nestedUl.style.display = 'block';
-          if (arrowSpan) arrowSpan.textContent = '▼';
+          if (arrowSpan) arrowSpan.textContent = '▼'; // Change arrow to expanded state
+        } else {
+          // If it's already expanded, collapse it
+          collapseParentFolderAndChildren(button, data);
         }
       }
     }
